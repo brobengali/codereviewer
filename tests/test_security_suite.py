@@ -274,7 +274,7 @@ def test_secret_redaction_comprehensive(config: AppConfig) -> None:
     leakage_sample = (
         "aws_key: AKIAIOSFODNN7EXAMPLE\n"
         "ghp_token = 'ghp_111122223333444455556666777788889999'\n"
-        "google_key: AIzaSyD1234567890abcdefghijklmnopqrstuv\n"
+        "api_key: DUMMY_API_KEY_SECRET_FOR_TESTING_PURPOSES_ONLY_12345\n"
         f"bearer_token: {jwt_token}\n"
         "db_url = 'postgres://admin:SuperSecretPassword123@db.prod.internal:5432/core'\n"
     )
@@ -283,7 +283,7 @@ def test_secret_redaction_comprehensive(config: AppConfig) -> None:
 
     assert "AKIAIOSFODNN7EXAMPLE" not in result.clean_text
     assert "ghp_111122223333444455556666777788889999" not in result.clean_text
-    assert "AIzaSyD1234567890abcdefghijklmnopqrstuv" not in result.clean_text
+    assert "DUMMY_API_KEY_SECRET_FOR_TESTING_PURPOSES_ONLY_12345" not in result.clean_text
     assert "SuperSecretPassword123" not in result.clean_text
     assert "[REDACTED" in result.clean_text
 
@@ -314,7 +314,7 @@ def test_zero_secrets_leak_to_cache_or_payload(tmp_path: Path, config: AppConfig
         }
     )
 
-    raw_secret = "AIzaSyD1234567890abcdefghijklmnopqrstuv"
+    raw_secret = "DUMMY_API_KEY_SECRET_FOR_TESTING_PURPOSES_ONLY_12345"
     raw_prompt = f"Analyze this configuration: api_key = '{raw_secret}'"
 
     redactor = SecretRedactor.load(config_with_cache)

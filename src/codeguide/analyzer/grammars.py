@@ -19,6 +19,7 @@ class GrammarRegistry:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
         self._languages: dict[str, tree_sitter.Language] = {}
+        self._parsers: dict[str, tree_sitter.Parser] = {}
         self._queries: dict[str, dict[str, tree_sitter.Query]] = {}
         self._extension_map: dict[str, str] = {}
         self._query_rules: dict[str, Any] = {}
@@ -48,6 +49,7 @@ class GrammarRegistry:
                 lang_factory = getattr(mod, grammar_cfg.function)
                 lang_obj = tree_sitter.Language(lang_factory())
                 self._languages[lang_name] = lang_obj
+                self._parsers[lang_name] = tree_sitter.Parser(lang_obj)
                 self._compile_queries_for_language(lang_name, lang_obj)
             except (ImportError, AttributeError, Exception) as exc:
                 logger.debug("Tree-sitter grammar unavailable for %s: %s", lang_name, exc)
@@ -68,10 +70,7 @@ class GrammarRegistry:
         return self._extension_map.get(extension.lower())
 
     def get_parser(self, lang_name: str) -> tree_sitter.Parser | None:
-        lang_obj = self._languages.get(lang_name)
-        if not lang_obj:
-            return None
-        return tree_sitter.Parser(lang_obj)
+        return self._parsers.get(lang_name)
 
     def get_queries(self, lang_name: str) -> dict[str, tree_sitter.Query]:
         return self._queries.get(lang_name, {})
