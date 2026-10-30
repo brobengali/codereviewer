@@ -1,0 +1,44 @@
+# Package manager detection rules (External Data File)
+version = "1.0.0"
+
+[[package_managers]]
+name = "poetry"
+language = "python"
+file_indicators = ["poetry.lock"]
+manifest_patterns = [{ file = "pyproject.toml", pattern = "[tool.poetry]" }]
+
+[[package_managers]]
+name = "pip"
+language = "python"
+file_indicators = ["requirements.txt", "requirements.lock", "setup.py", "Pipfile"]
+manifest_patterns = []
+
+[[package_managers]]
+name = "npm"
+language = "javascript"
+file_indicators = ["package-lock.json"]
+manifest_patterns = [{ file = "package.json", pattern = '"name"' }]
+
+[[package_managers]]
+name = "pnpm"
+language = "javascript"
+file_indicators = ["pnpm-lock.yaml"]
+manifest_patterns = []
+
+[[package_managers]]
+name = "yarn"
+language = "javascript"
+file_indicators = ["yarn.lock"]
+manifest_patterns = []
+
+[[package_managers]]
+name = "cargo"
+language = "rust"
+file_indicators = ["Cargo.toml", "Cargo.lock"]
+manifest_patterns = []
+
+[[package_managers]]
+name = "go modules"
+language = "go"
+file_indicators = ["go.mod", "go.sum"]
+manifest_patterns = []

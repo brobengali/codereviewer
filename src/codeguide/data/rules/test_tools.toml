@@ -1,0 +1,46 @@
+# Test tool detection rules (External Data File)
+version = "1.0.0"
+
+[[test_tools]]
+name = "pytest"
+language = "python"
+file_indicators = ["pytest.ini", "conftest.py"]
+manifest_patterns = [
+    { file = "pyproject.toml", pattern = "pytest" },
+    { file = "requirements*.txt", pattern = "pytest" }
+]
+
+[[test_tools]]
+name = "unittest"
+language = "python"
+file_indicators = []
+manifest_patterns = []
+code_patterns = ["import unittest", "from unittest import"]
+
+[[test_tools]]
+name = "jest"
+language = "javascript"
+file_indicators = ["jest.config.js", "jest.config.ts", "jest.config.json"]
+manifest_patterns = [
+    { file = "package.json", pattern = '"jest"' }
+]
+
+[[test_tools]]
+name = "vitest"
+language = "javascript"
+file_indicators = ["vitest.config.ts", "vitest.config.js"]
+manifest_patterns = [
+    { file = "package.json", pattern = '"vitest"' }
+]
+
+[[test_tools]]
+name = "cargo test"
+language = "rust"
+file_indicators = []
+code_patterns = ["#[test]", "#[cfg(test)]"]
+
+[[test_tools]]
+name = "go test"
+language = "go"
+file_indicators = ["*_test.go"]
+manifest_patterns = []

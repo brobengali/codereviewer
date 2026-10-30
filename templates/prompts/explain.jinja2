@@ -1,0 +1,26 @@
+You are explaining a file, component, or symbol from the repository.
+
+Target to explain: {{ target }}
+Audience level: {{ audience_level }}
+Audience adaptation guidance:
+- junior: Focus on foundational concepts, sequential step-by-step logic, and concrete examples without unexplained jargon.
+- mid: Focus on architectural patterns, API contracts, data flow, error handling, and component relationships.
+- senior: Focus on architectural tradeoffs, performance characteristics, invariants, concurrency boundaries, and failure modes.
+
+Context from repository:
+<<<DATA_BLOCK_{{ boundary_token }}>>>
+{% for chunk in retrieved_chunks %}
+File: {{ chunk.path }} (lines {{ chunk.start_line }}-{{ chunk.end_line }})
+{{ chunk.content }}
+---
+{% else %}
+No matching repository content found for {{ target }}.
+{% endfor %}
+<<</DATA_BLOCK_{{ boundary_token }}>>>
+
+INSTRUCTIONS:
+1. Explain the target tailored specifically to the {{ audience_level }} audience level.
+2. Every claim must cite the exact file path and line numbers: {path, start_line, end_line}.
+3. If the target is not present or evidence is weak in the context, state "unclear", set evidence_found to false, and provide an empty citations list.
+4. Suggest 2 to 3 technical follow-up questions to explore further.
+

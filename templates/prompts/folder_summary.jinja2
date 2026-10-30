@@ -1,0 +1,13 @@
+Explain the collective architectural role of the modules in the following directory.
+
+<<<DATA_BLOCK_{{ boundary_token }}>>>
+Folder: {{ folder_path }}
+Files in folder:
+{% for item in files %}
+--- File: {{ item.path }} ({{ item.lines_count }} lines) ---
+{{ item.content }}
+{% endfor %}
+<<</DATA_BLOCK_{{ boundary_token }}>>>
+
+Output your analysis matching the required structured schema. Every claim must provide a non-empty list of exact citations.
+

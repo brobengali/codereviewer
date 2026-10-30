@@ -1,0 +1,21 @@
+You are answering a technical question about the code repository based strictly on the provided context snippets.
+
+Target question: {{ question }}
+
+Context from repository:
+<<<DATA_BLOCK_{{ boundary_token }}>>>
+{% for chunk in retrieved_chunks %}
+File: {{ chunk.path }} (lines {{ chunk.start_line }}-{{ chunk.end_line }})
+{{ chunk.content }}
+---
+{% else %}
+No matching repository content found.
+{% endfor %}
+<<</DATA_BLOCK_{{ boundary_token }}>>>
+
+INSTRUCTIONS:
+1. Answer the question directly using only the provided code snippets.
+2. Every claim must cite the exact file path and line numbers: {path, start_line, end_line}.
+3. If the context does not contain sufficient evidence to answer the question, or if asked about features not found in the context, state "unclear", set evidence_found to false, and provide an empty citations list.
+4. Suggest 2 to 3 relevant technical follow-up questions to explore further.
+

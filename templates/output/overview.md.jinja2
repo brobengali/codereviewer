@@ -1,0 +1,30 @@
+# {{ repo_name }}
+
+## Architecture
+- Classification: {{ architecture.name }}
+- Evidence: {{ architecture.citation | default("unclear", true) }}
+- Rationale: {{ architecture.rationale | default("unclear", true) }}
+
+## Languages
+{% for lang in languages %}
+- {{ lang.name }}: {{ lang.file_count }} files, {{ lang.line_count }} lines ({{ lang.sample_file_citation }})
+{% else %}
+- Language distribution: unclear
+{% endfor %}
+
+## Entrypoints
+{% for ep in entrypoints %}
+- {{ ep.id }}: `{{ ep.target }}` [{{ ep.citation }}]
+{% else %}
+- Primary entrypoint: unclear
+{% endfor %}
+
+## Module Breakdown
+{% for mod in modules %}
+### `{{ mod.path }}`
+- Responsibility: {{ mod.responsibility }} [{{ mod.citation }}]
+- Key symbols: {{ mod.symbols | join(', ') }}
+{% else %}
+- Module structure: unclear
+{% endfor %}
+

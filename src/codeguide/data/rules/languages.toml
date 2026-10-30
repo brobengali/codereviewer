@@ -1,0 +1,59 @@
+# Language detection rules (External Data File)
+version = "1.0.0"
+
+[[languages]]
+id = "python"
+name = "Python"
+extensions = [".py", ".pyw", ".pyi"]
+filenames = ["Snakefile"]
+shebangs = ["python", "python3"]
+
+[[languages]]
+id = "javascript"
+name = "JavaScript"
+extensions = [".js", ".jsx", ".mjs", ".cjs"]
+filenames = []
+shebangs = ["node"]
+
+[[languages]]
+id = "typescript"
+name = "TypeScript"
+extensions = [".ts", ".tsx", ".mts", ".cts"]
+filenames = []
+shebangs = ["ts-node", "bun", "deno"]
+
+[[languages]]
+id = "go"
+name = "Go"
+extensions = [".go"]
+filenames = []
+shebangs = []
+
+[[languages]]
+id = "rust"
+name = "Rust"
+extensions = [".rs"]
+filenames = []
+shebangs = []
+
+[[languages]]
+id = "java"
+name = "Java"
+extensions = [".java"]
+filenames = []
+shebangs = []
+
+[[languages]]
+id = "c"
+name = "C"
+extensions = [".c", ".h"]
+filenames = []
+shebangs = []
+
+[[languages]]
+id = "cpp"
+name = "C++"
+extensions = [".cpp", ".cxx", ".cc", ".hpp", ".hxx", ".hh"]
+filenames = []
+shebangs = []
+

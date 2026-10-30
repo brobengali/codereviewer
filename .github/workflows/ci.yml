@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-and-security:
+    name: Lint, Audit & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install mypy pip-audit
+
+      - name: Secret scanning
+        run: |
+          # Verify zero unmasked credentials or live tokens are tracked
+          python -c "
+          import re, sys
+          from pathlib import Path
+          patterns = [
+              r'AIza[0-9A-Za-z-_]{35}',
+              r'sk-[a-zA-Z0-9]{20,}',
+              r'ghp_[a-zA-Z0-9]{36}',
+          ]
+          leaks = []
+          for p in Path('.').rglob('*'):
+              if any(part in ('.git', '.venv', '__pycache__', 'tests') for part in p.parts):
+                  continue
+              if p.is_file() and p.suffix in ('.py', '.toml', '.md', '.yaml', '.yml'):
+                  text = p.read_text(encoding='utf-8', errors='ignore')
+                  for pat in patterns:
+                      if re.search(pat, text):
+                          leaks.append(f'{p}: matched {pat}')
+          if leaks:
+              print('SECRET LEAKAGE DETECTED:\n' + '\n'.join(leaks), file=sys.stderr)
+              sys.exit(1)
+          print('Secret scan clean: 0 live secrets found in tracked sources.')
+          "
+
+      - name: Lint and format check (ruff)
+        run: |
+          ruff check src tests scripts
+          ruff format --check src tests scripts
+
+      - name: Type checking (mypy)
+        run: |
+          mypy src
+
+      - name: Security vulnerability analysis (bandit)
+        run: |
+          bandit -r src/
+
+      - name: Dependency vulnerability audit (pip-audit)
+        run: |
+          pip-audit
+
+      - name: AST Zero Hardcoding & Magic Numbers Verification
+        run: |
+          python scripts/check_no_hardcoding.py
+
+      - name: Code Slop Audit (codeguide lint-code)
+        run: |
+          codeguide lint-code src/
+
+      - name: Run Consolidated Security Test Suite
+        run: |
+          pytest tests/test_security_suite.py -v
+
+      - name: Run Full Test Suite
+        run: |
+          pytest -v
+

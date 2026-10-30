@@ -1,0 +1,316 @@
+[meta]
+version = "1.0.0"
+config_filename = "codeguide.toml"
+
+[llm]
+provider = "gemini"
+model_name = "gemini-1.5-flash"
+api_base_url = "https://generativelanguage.googleapis.com"
+api_key = ""
+api_key_env_var = "GEMINI_API_KEY"
+keyring_service_name = "codeguide"
+keyring_username = "gemini_api_key"
+request_timeout_seconds = 30.0
+max_retries = 3
+backoff_factor = 2.0
+temperature = 0.2
+max_tokens = 4096
+max_output_tokens = 4096
+requests_per_minute = 60
+tokens_per_minute = 100000
+thinking_budget = 0
+offline = false
+cache_enabled = true
+cache_dir = ".codeguide/cache"
+safety_settings = [
+    { category = "HARM_CATEGORY_HARASSMENT", threshold = "BLOCK_LOW_AND_ABOVE" },
+    { category = "HARM_CATEGORY_HATE_SPEECH", threshold = "BLOCK_LOW_AND_ABOVE" },
+    { category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold = "BLOCK_LOW_AND_ABOVE" },
+    { category = "HARM_CATEGORY_DANGEROUS_CONTENT", threshold = "BLOCK_LOW_AND_ABOVE" }
+]
+
+[analysis]
+max_file_size_bytes = 1048576
+max_repo_size_bytes = 104857600
+max_files_count = 5000
+file_read_timeout_seconds = 10.0
+supported_extensions = [
+    ".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".rs", ".java",
+    ".c", ".cpp", ".h", ".hpp", ".rb", ".php", ".cs", ".swift",
+    ".kt", ".scala", ".sh", ".sql", ".html", ".css", ".json",
+    ".yaml", ".yml", ".toml", ".md"
+]
+ignore_patterns = [
+    ".git", ".svn", ".hg", ".venv", "venv", "node_modules",
+    "__pycache__", "dist", "build", ".idea", ".vscode",
+    "codeguide_output", ".codeguide",
+    "*.min.js", "*.min.css", "*.lock", "*.png", "*.jpg",
+    "*.jpeg", "*.gif", "*.svg", "*.ico", "*.pdf", "*.zip",
+    "*.tar", "*.gz", "*.exe", "*.dll", "*.so", "*.dylib"
+]
+max_ast_depth = 50
+max_lines_per_file = 10000
+lockfile_patterns = [
+    "*.lock",
+    "package-lock.json",
+    "Cargo.lock",
+    "poetry.lock",
+    "Pipfile.lock",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "composer.lock"
+]
+binary_extensions = [
+    ".png", ".jpg", ".jpeg", ".gif", ".ico", ".pdf", ".zip",
+    ".tar", ".gz", ".exe", ".dll", ".so", ".dylib", ".bin",
+    ".pyc", ".pyo", ".wasm", ".class", ".jar", ".7z", ".mp3",
+    ".mp4", ".woff", ".woff2", ".ttf", ".eot"
+]
+build_directories = [
+    "dist", "build", "target", "__pycache__", "out", "bin",
+    "obj", ".next", ".nuxt", "node_modules", ".venv", "venv"
+]
+documentation_patterns = [
+    "README*", "CONTRIBUTING*", "LICENSE*", "CHANGELOG*"
+]
+ci_patterns = [
+    ".github/workflows/*.yml", ".github/workflows/*.yaml",
+    ".gitlab-ci.yml", "Jenkinsfile", ".circleci/config.yml"
+]
+build_file_patterns = [
+    "Dockerfile*", "Makefile*", "docker-compose*.yml",
+    "docker-compose*.yaml", "Vagrantfile"
+]
+
+[analysis.importance_weights]
+base_score = 1.0
+entrypoint_bonus = 5.0
+route_bonus = 3.5
+db_model_bonus = 3.5
+documentation_bonus = 3.0
+ci_build_bonus = 2.0
+root_bonus = 1.5
+lines_scale = 0.005
+max_lines_bonus = 3.0
+
+[analysis.grammars.python]
+package = "tree_sitter_python"
+function = "language"
+extensions = [".py"]
+
+[analysis.grammars.javascript]
+package = "tree_sitter_javascript"
+function = "language"
+extensions = [".js", ".jsx", ".mjs", ".cjs"]
+
+[analysis.risk_signals]
+huge_file_lines_threshold = 500
+todo_cluster_threshold = 3
+todo_cluster_window_lines = 50
+todo_patterns = ["TODO", "FIXME", "HACK", "XXX", "BUG"]
+test_file_patterns = [
+    "test_*.py", "*_test.py", "*.test.js", "*.spec.js",
+    "*.test.ts", "*.spec.ts", "*_test.go", "test_*.rb"
+]
+source_file_extensions = [
+    ".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".rs", ".java",
+    ".rb", ".php", ".cs", ".swift", ".kt", ".c", ".cpp"
+]
+
+[analysis.chunking]
+max_chunk_lines = 100
+chunk_overlap_lines = 15
+min_chunk_lines = 10
+
+[analysis.dependencies]
+core_module_min_in_degree = 2
+detect_circular = true
+internal_import_prefixes = [".", "/", "@/", "~/"]
+
+[paths]
+templates_dir = "templates"
+prompts_dir = "templates/prompts"
+output_dir = "codeguide_output"
+languages_file = "src/codeguide/data/languages.toml"
+entrypoints_file = "src/codeguide/data/entrypoints.toml"
+architecture_rules_file = "src/codeguide/data/architecture_rules.toml"
+style_rules_file = "src/codeguide/data/style_rules.toml"
+messages_file = "src/codeguide/data/messages.toml"
+rules_dir = "src/codeguide/data/rules"
+secret_rules_file = "src/codeguide/data/rules/secret_rules.toml"
+queries_file = "src/codeguide/data/rules/tree_sitter_queries.toml"
+onboarding_template = "templates/output/ONBOARDING.md.jinja2"
+interactive_template = "templates/output/index.html.jinja2"
+ask_template = "templates/prompts/ask.jinja2"
+explain_template = "templates/prompts/explain.jinja2"
+
+[retrieval]
+mode = "keyword"
+top_k = 5
+min_score_threshold = 0.05
+bm25_k1 = 1.5
+bm25_b = 0.75
+
+[repo]
+allowed_schemes = ["https"]
+allowed_hosts = ["github.com", "gitlab.com", "bitbucket.org"]
+allow_all_hosts = false
+clone_timeout_seconds = 60.0
+clone_depth = 1
+scan_timeout_seconds = 30.0
+temp_dir_prefix = "codeguide_repo_"
+dir_mode = 448
+git_binary = "git"
+
+[security]
+redact_secrets = true
+entropy_threshold = 4.3
+min_entropy_length = 20
+max_entropy_length = 120
+entropy_placeholder = "[REDACTED:high_entropy]"
+max_snippet_chars = 1200
+allow_symlinks = false
+escape_output = true
+block_private_ips = true
+max_compression_ratio = 100.0
+denied_file_patterns = [
+    ".env*",
+    "*.env",
+    "*.pem",
+    "*.key",
+    "*.pkcs12",
+    "*.pfx",
+    "*.p12",
+    "id_rsa*",
+    "id_ecdsa*",
+    "id_ed25519*",
+    "*.kdbx",
+    "*.keystore",
+    "*.jks",
+    "*.crt",
+    "*.der"
+]
+blocked_ip_networks = [
+    "0.0.0.0/8",
+    "10.0.0.0/8",
+    "100.64.0.0/10",
+    "127.0.0.0/8",
+    "169.254.0.0/16",
+    "172.16.0.0/12",
+    "192.0.0.0/24",
+    "192.0.2.0/24",
+    "192.88.99.0/24",
+    "192.168.0.0/16",
+    "198.18.0.0/15",
+    "198.51.100.0/24",
+    "203.0.113.0/24",
+    "224.0.0.0/4",
+    "240.0.0.0/4",
+    "255.255.255.255/32",
+    "::/128",
+    "::1/128",
+    "::ffff:0:0/96",
+    "100::/64",
+    "2001:db8::/32",
+    "fc00::/7",
+    "fe80::/10",
+    "fec0::/10",
+    "ff00::/8"
+]
+mask_value = "********"
+redacted_marker = "[REDACTED]"
+sensitive_key_names = [
+    "api_key",
+    "secret",
+    "token",
+    "password",
+    "auth",
+    "authorization",
+    "private_key",
+    "access_token"
+]
+secret_patterns = [
+    '''(?i)(?:api_key|apikey|secret|token|password|auth|bearer)[\s:=]+["']?([a-zA-Z0-9_\-\.]{8,})["']?''',
+    '''AIza[0-9A-Za-z\-_]{35}''',
+    '''sk-[a-zA-Z0-9]{20,}''',
+    '''ghp_[a-zA-Z0-9]{36}'''
+]
+
+[logging]
+level = "INFO"
+format = "json"
+
+[style]
+max_sentence_length = 35
+disallow_emojis_in_headings = true
+require_citations_for_claims = true
+min_citation_coverage_ratio = 1.0
+unclear_marker = "unclear"
+banned_phrases = [
+    "in conclusion",
+    "to conclude",
+    "to summarize",
+    "in summary",
+    "all in all",
+    "final thoughts",
+    "best practices",
+    "industry standards",
+    "clean architecture",
+    "modern design patterns",
+    "handles logic",
+    "manages data",
+    "serves as the backbone",
+    "serves as the foundation",
+    "seamless integration",
+    "take it to the next level"
+]
+banned_openers = [
+    "in today's fast-paced world",
+    "in today's digital landscape",
+    "this comprehensive guide",
+    "welcome to",
+    "as an ai",
+    "in this article",
+    "in this document",
+    "it is important to note that"
+]
+vague_words = [
+    "robust",
+    "seamless",
+    "power",
+    "powerful",
+    "leverage",
+    "utilize",
+    "delve",
+    "cutting-edge",
+    "scalable",
+    "game-changer",
+    "effortless",
+    "pivotal",
+    "various",
+    "multiple",
+    "appropriate",
+    "efficient",
+    "suitable"
+]
+
+[citations]
+citation_format = "{path}:{start_line}-{end_line}"
+single_line_format = "{path}:{line}"
+unclear_fallback = "unclear"
+strict_verification = true
+
+[ui]
+output_format = "markdown"
+verbose = false
+interactive_html_filename = "index.html"
+onboarding_md_filename = "ONBOARDING.md"
+default_audience_level = "mid"
+supported_audience_levels = ["junior", "mid", "senior"]
+
+[slop]
+max_slop_score = 0.0
+repetition_similarity_threshold = 0.85
+min_specificity_score = 1.0
+max_sentence_length = 35
+fail_on_slop = true

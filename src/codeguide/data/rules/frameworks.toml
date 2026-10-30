@@ -1,0 +1,59 @@
+# Framework detection rules (External Data File)
+version = "1.0.0"
+
+[[frameworks]]
+name = "FastAPI"
+category = "web_framework"
+language = "python"
+manifest_files = ["pyproject.toml", "requirements.txt", "Pipfile", "setup.py"]
+manifest_patterns = ["fastapi"]
+code_patterns = ["from fastapi import", "import fastapi"]
+
+[[frameworks]]
+name = "Flask"
+category = "web_framework"
+language = "python"
+manifest_files = ["pyproject.toml", "requirements.txt", "Pipfile", "setup.py"]
+manifest_patterns = ["flask", "Flask"]
+code_patterns = ["from flask import", "import flask"]
+
+[[frameworks]]
+name = "Django"
+category = "web_framework"
+language = "python"
+manifest_files = ["pyproject.toml", "requirements.txt", "Pipfile", "setup.py"]
+manifest_patterns = ["django", "Django"]
+code_patterns = ["from django import", "import django"]
+
+[[frameworks]]
+name = "Express"
+category = "web_framework"
+language = "javascript"
+manifest_files = ["package.json"]
+manifest_patterns = ['"express"']
+code_patterns = ["require('express')", 'require("express")', "from 'express'", 'from "express"']
+
+[[frameworks]]
+name = "React"
+category = "frontend_framework"
+language = "javascript"
+manifest_files = ["package.json"]
+manifest_patterns = ['"react"']
+code_patterns = ["from 'react'", 'from "react"', "require('react')", 'require("react")']
+
+[[frameworks]]
+name = "Gin"
+category = "web_framework"
+language = "go"
+manifest_files = ["go.mod"]
+manifest_patterns = ["github.com/gin-gonic/gin"]
+code_patterns = ['"github.com/gin-gonic/gin"']
+
+[[frameworks]]
+name = "Actix Web"
+category = "web_framework"
+language = "rust"
+manifest_files = ["Cargo.toml"]
+manifest_patterns = ["actix-web"]
+code_patterns = ["use actix_web::", "actix_web::"]
+

@@ -1,0 +1,56 @@
+# Language detection and parsing specifications (External Data File)
+version = "1.0.0"
+
+[languages.python]
+name = "Python"
+extensions = [".py", ".pyw", ".pyi"]
+filenames = ["Snakefile"]
+tree_sitter_id = "python"
+line_comment = "#"
+docstring_delimiters = ['"""', "'''"]
+
+[languages.javascript]
+name = "JavaScript"
+extensions = [".js", ".jsx", ".mjs", ".cjs"]
+filenames = []
+tree_sitter_id = "javascript"
+line_comment = "//"
+block_comment_start = "/*"
+block_comment_end = "*/"
+
+[languages.typescript]
+name = "TypeScript"
+extensions = [".ts", ".tsx", ".mts", ".cts"]
+filenames = []
+tree_sitter_id = "typescript"
+line_comment = "//"
+block_comment_start = "/*"
+block_comment_end = "*/"
+
+[languages.go]
+name = "Go"
+extensions = [".go"]
+filenames = []
+tree_sitter_id = "go"
+line_comment = "//"
+block_comment_start = "/*"
+block_comment_end = "*/"
+
+[languages.rust]
+name = "Rust"
+extensions = [".rs"]
+filenames = []
+tree_sitter_id = "rust"
+line_comment = "//"
+block_comment_start = "/*"
+block_comment_end = "*/"
+
+[languages.java]
+name = "Java"
+extensions = [".java"]
+filenames = []
+tree_sitter_id = "java"
+line_comment = "//"
+block_comment_start = "/*"
+block_comment_end = "*/"
+

@@ -1,0 +1,27 @@
+# Example CodeGuide configuration file (codeguide.toml)
+# All values are optional; any omitted field falls back to defaults.toml
+
+[llm]
+model_name = "gemini-1.5-pro"
+temperature = 0.1
+
+[analysis]
+max_files_count = 2000
+ignore_patterns = [
+    ".git",
+    "node_modules",
+    ".venv",
+    "dist",
+    "custom_cache"
+]
+
+[paths]
+output_dir = "docs/architecture"
+
+[security]
+redact_secrets = true
+allow_symlinks = false
+
+[ui]
+verbose = true
+

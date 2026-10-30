@@ -1,0 +1,47 @@
+# Tree-sitter AST queries and fallback regex rules (External Data File)
+version = "1.0.0"
+
+[queries.python]
+functions = '''
+(function_definition
+  name: (identifier) @name) @def
+'''
+classes = '''
+(class_definition
+  name: (identifier) @name) @def
+'''
+imports = '''
+(import_statement name: (dotted_name) @import)
+(import_from_statement module_name: (dotted_name) @module_name)
+(import_from_statement module_name: (relative_import) @rel_module)
+'''
+
+[queries.javascript]
+functions = '''
+(function_declaration name: (identifier) @name) @def
+(method_definition name: (property_identifier) @name) @def
+(variable_declarator name: (identifier) @name value: (arrow_function)) @def
+'''
+classes = '''
+(class_declaration name: (identifier) @name) @def
+'''
+imports = '''
+(import_statement source: (string) @import_source)
+(call_expression function: (identifier) @fn_call arguments: (arguments (string) @req_source))
+'''
+
+[fallbacks.python]
+functions = '''(?:def\s+([A-Za-z0-9_]+)\s*\()'''
+classes = '''(?:class\s+([A-Za-z0-9_]+)\s*(?:\([^)]*\))?:)'''
+imports = '''(?:(?:from\s+([a-zA-Z0-9_\.]+)\s+import)|(?:import\s+([a-zA-Z0-9_\.]+)))'''
+
+[fallbacks.javascript]
+functions = '''(?:(?:function\s+([A-Za-z0-9_]+)\s*\()|(?:const|let|var)\s+([A-Za-z0-9_]+)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>)'''
+classes = '''(?:class\s+([A-Za-z0-9_]+))'''
+imports = '''(?:(?:import\s+.*?\s+from\s+['"]([^'"]+)['"])|(?:require\s*\(\s*['"]([^'"]+)['"]\s*\)))'''
+
+[fallbacks.generic]
+functions = '''(?:(?:fn|func|def|function)\s+([A-Za-z0-9_]+)\s*\()'''
+classes = '''(?:(?:class|struct|interface|type)\s+([A-Za-z0-9_]+))'''
+imports = '''(?:(?:import|use|include|require)\s+['"]?([a-zA-Z0-9_./\-]+)['"]?)'''
+

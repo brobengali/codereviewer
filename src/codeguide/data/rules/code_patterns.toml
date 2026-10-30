@@ -1,0 +1,116 @@
+# Code pattern detection rules for symbols, routes, models, and env vars (External Data File)
+version = "1.0.0"
+
+[[entry_points]]
+id = "python-main-block"
+language = "python"
+regex = '''if\s+__name__\s*==\s*['"]__main__['"]\s*:'''
+capture_name = "main"
+
+[[entry_points]]
+id = "python-main-file"
+language = "python"
+filename = "__main__.py"
+capture_name = "__main__"
+
+[[entry_points]]
+id = "node-main-file"
+language = "javascript"
+filename_patterns = ["index.js", "index.ts", "server.js", "server.ts", "app.js", "app.ts"]
+capture_name = "server"
+
+[[entry_points]]
+id = "rust-main"
+language = "rust"
+regex = '''fn\s+main\s*\(\s*\)'''
+capture_name = "main"
+
+[[entry_points]]
+id = "go-main"
+language = "go"
+regex = '''func\s+main\s*\(\s*\)'''
+capture_name = "main"
+
+[[routes]]
+id = "python-fastapi-route"
+language = "python"
+regex = '''@(app|router)\.(get|post|put|delete|patch|options|head)\(\s*['"]([^'"]+)['"]'''
+method_group = 2
+path_group = 3
+
+[[routes]]
+id = "python-flask-route"
+language = "python"
+regex = '''@(app|blueprint)\.route\(\s*['"]([^'"]+)['"](?:.*methods\s*=\s*\[([^\]]+)\])?'''
+path_group = 2
+method_group = 3
+
+[[routes]]
+id = "express-route"
+language = "javascript"
+regex = '''(?:app|router)\.(get|post|put|delete|patch)\(\s*['"]([^'"]+)['"]'''
+method_group = 1
+path_group = 2
+
+[[routes]]
+id = "gin-route"
+language = "go"
+regex = '''(?:r|router|api|v1)\.(GET|POST|PUT|DELETE|PATCH)\(\s*['"]([^'"]+)['"]'''
+method_group = 1
+path_group = 2
+
+[[db_models]]
+id = "python-sqlalchemy-peewee"
+language = "python"
+regex = '''class\s+([A-Za-z0-9_]+)\s*\((?:[^)]*(?:Base|Model|Document|Table)[^)]*)\):'''
+model_name_group = 1
+
+[[db_models]]
+id = "python-pydantic-model"
+language = "python"
+regex = '''class\s+([A-Za-z0-9_]+)\s*\((?:[^)]*BaseModel[^)]*)\):'''
+model_name_group = 1
+
+[[db_models]]
+id = "prisma-model"
+language = "prisma"
+regex = '''model\s+([A-Za-z0-9_]+)\s*\{'''
+model_name_group = 1
+
+[[db_models]]
+id = "typeorm-entity"
+language = "javascript"
+regex = '''@Entity\(\s*['"]?([A-Za-z0-9_]*)['"]?\s*\)\s*(?:export\s+)?class\s+([A-Za-z0-9_]+)'''
+model_name_group = 2
+
+[[db_models]]
+id = "rust-diesel-model"
+language = "rust"
+regex = '''#\[derive\(.*(?:Queryable|Insertable|Model).* \)\]\s*(?:pub\s+)?struct\s+([A-Za-z0-9_]+)'''
+model_name_group = 1
+
+[[env_vars]]
+id = "python-os-environ"
+language = "python"
+regex = '''os\.environ(?:\[['"]([A-Z0-9_]+)['"]\]|\.get\(\s*['"]([A-Z0-9_]+)['"])'''
+var_name_group = 1
+fallback_var_name_group = 2
+
+[[env_vars]]
+id = "node-process-env"
+language = "javascript"
+regex = '''process\.env\.([A-Za-z0-9_]+)'''
+var_name_group = 1
+
+[[env_vars]]
+id = "go-os-getenv"
+language = "go"
+regex = '''os\.Getenv\(\s*['"]([A-Za-z0-9_]+)['"]\)'''
+var_name_group = 1
+
+[[env_vars]]
+id = "rust-env-var"
+language = "rust"
+regex = '''env::var\(\s*['"]([A-Za-z0-9_]+)['"]\)'''
+var_name_group = 1
+

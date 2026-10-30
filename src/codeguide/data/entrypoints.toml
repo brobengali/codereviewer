@@ -1,0 +1,44 @@
+# Entry point detection rules (External Data File)
+version = "1.0.0"
+
+[[rules]]
+id = "python-main"
+language = "python"
+type = "executable_file"
+pattern = "__main__.py"
+priority = 100
+description = "Python module execution entrypoint"
+
+[[rules]]
+id = "python-main-block"
+language = "python"
+type = "ast_pattern"
+pattern = "if __name__ == '__main__':"
+priority = 80
+description = "Standard Python script entry block"
+
+[[rules]]
+id = "node-package-main"
+language = "javascript"
+type = "manifest_field"
+manifest = "package.json"
+field = "main"
+priority = 90
+description = "Node package main entry file"
+
+[[rules]]
+id = "go-main-package"
+language = "go"
+type = "ast_pattern"
+pattern = "package main"
+priority = 90
+description = "Go executable package entry"
+
+[[rules]]
+id = "rust-main"
+language = "rust"
+type = "filename"
+pattern = "main.rs"
+priority = 90
+description = "Rust binary entrypoint"
+

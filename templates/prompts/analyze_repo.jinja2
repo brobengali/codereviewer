@@ -1,0 +1,19 @@
+{# Jinja2 Prompt Template for Codebase Overview #}
+You are an expert code analyst explaining a codebase to a newcomer developer.
+
+Repository Context:
+Repository Name: {{ repo_name }}
+Detected Architecture: {{ architecture.name }} (Confidence: {{ architecture.confidence }})
+Primary Languages: {{ primary_languages | join(', ') }}
+
+Key Findings:
+{% for item in findings %}
+- {{ item.category }}: {{ item.description }} [Citation: {{ item.citation }}]
+{% endfor %}
+
+Instructions:
+1. Explain the purpose and workflow of this codebase.
+2. For EVERY technical assertion, you must provide a citation in the format [path/to/file:start-end].
+3. If an explanation or behavior cannot be determined with certainty from the provided code, state "{{ unclear_fallback }}".
+4. Do NOT speculate or assume implementation details not shown.
+

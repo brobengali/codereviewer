@@ -1,0 +1,75 @@
+# Architectural pattern detection rules (External Data File)
+version = "1.0.0"
+
+[[patterns]]
+id = "monolith"
+name = "Monolith Architecture"
+indicators = ["src", "app", "lib"]
+exclusion_indicators = ["packages", "apps", "services"]
+match_type = "monolith_heuristic"
+min_matched = 1
+confidence_threshold = 0.75
+description = "Single unified application codebase organized under a shared root"
+
+[[patterns]]
+id = "mvc"
+name = "Model-View-Controller (MVC)"
+indicators = ["controllers", "models", "views"]
+exclusion_indicators = []
+match_type = "directory_presence"
+min_matched = 2
+confidence_threshold = 0.8
+description = "Separates application logic into models, views, and controllers"
+
+[[patterns]]
+id = "layered"
+name = "Layered Architecture"
+indicators = ["services", "repositories", "controllers", "domain", "api", "dal"]
+exclusion_indicators = []
+match_type = "directory_presence"
+min_matched = 2
+confidence_threshold = 0.75
+description = "Organized into discrete functional layers such as presentation, domain, and data access"
+
+[[patterns]]
+id = "monorepo"
+name = "Monorepo Workspace"
+indicators = [
+    "packages", "apps", "workspaces", "pnpm-workspace.yaml",
+    "lerna.json", "nx.json", "turbo.json"
+]
+exclusion_indicators = []
+match_type = "any_presence"
+min_matched = 1
+confidence_threshold = 0.85
+description = "Repository structured into multiple independent packages or applications within a workspace"
+
+[[patterns]]
+id = "microservices"
+name = "Microservices"
+indicators = ["services", "docker-compose.yml", "docker-compose.yaml", "deployments", "helm", "k8s"]
+exclusion_indicators = []
+match_type = "directory_and_manifest"
+min_matched = 2
+confidence_threshold = 0.75
+description = "Distributed architecture consisting of multiple independent services and orchestration manifests"
+
+[[patterns]]
+id = "clean_hexagonal"
+name = "Clean / Hexagonal Architecture"
+indicators = ["domain", "ports", "adapters", "usecases"]
+exclusion_indicators = []
+match_type = "directory_presence"
+min_matched = 2
+confidence_threshold = 0.75
+description = "Decouples domain logic from external interfaces, persistence, and infrastructure"
+
+[[patterns]]
+id = "cli_application"
+name = "Command Line Interface (CLI)"
+indicators = ["cli", "commands", "cmd"]
+exclusion_indicators = []
+match_type = "directory_presence"
+min_matched = 1
+confidence_threshold = 0.7
+description = "Application designed primarily for terminal execution and subcommand routing"

@@ -1,0 +1,85 @@
+# Onboarding Guide: {{ repo_name }}
+
+## Purpose
+{{ purpose }} [{{ purpose_citation | default("unclear", true) }}]
+
+## Tech Stack
+| Component | Technology | Citation |
+| :--- | :--- | :--- |
+{% for item in tech_stack %}
+| {{ item.category }} | {{ item.name }} | {{ item.citation | default("unclear", true) }} |
+{% else %}
+| Stack | unclear | unclear |
+{% endfor %}
+
+## Architecture
+- Classification: {{ architecture_name }} [{{ architecture_citation | default("unclear", true) }}]
+- Structure: {{ architecture_description }}
+
+```mermaid
+{{ mermaid_diagram }}
+```
+
+## Folder Guide
+| Directory | Responsibility | Citation |
+| :--- | :--- | :--- |
+{% for item in folder_guide %}
+| `{{ item.path }}` | {{ item.purpose }} | {{ item.citation | default("unclear", true) }} |
+{% else %}
+| Directories | unclear | unclear |
+{% endfor %}
+
+## Traced Feature Flows
+{% for flow in feature_flows %}
+### Flow: {{ flow.name }}
+{{ flow.description }}
+
+Execution steps:
+{% for step in flow.steps %}
+{{ step.order }}. {{ step.description }} [{{ step.citation | default("unclear", true) }}]
+{% else %}
+- Step execution path: unclear
+{% endfor %}
+
+{% else %}
+- Feature flows: unclear
+{% endfor %}
+
+## Verified Setup Steps
+{% for step in setup_steps %}
+{{ step.step_number }}. {{ step.instruction }} [{{ step.citation | default("unclear", true) }}]
+{% else %}
+1. Setup instructions: unclear
+{% endfor %}
+
+## Domain Glossary
+| Term | Definition | Citation |
+| :--- | :--- | :--- |
+{% for term in glossary %}
+| `{{ term.term }}` | {{ term.definition }} | {{ term.citation | default("unclear", true) }} |
+{% else %}
+| Glossary | unclear | unclear |
+{% endfor %}
+
+## Inferred Conventions
+{% for convention in inferred_conventions %}
+- {{ convention }}
+{% else %}
+- Conventions: unclear
+{% endfor %}
+
+## First-Week Starter Tasks
+{% for task in starter_tasks %}
+- Day {{ task.day }}: {{ task.title }} - {{ task.description }} [{{ task.citation | default("unclear", true) }}]
+{% else %}
+- Starter tasks: unclear
+{% endfor %}
+
+## Gotchas and Hazards
+{% for gotcha in gotchas %}
+### `{{ gotcha.title }}` ({{ gotcha.risk_type }})
+{{ gotcha.explanation }} [{{ gotcha.citation | default("unclear", true) }}]
+{% else %}
+- Identified architectural hazards: unclear
+{% endfor %}
+

@@ -1,0 +1,62 @@
+# Style and Anti-Slop Enforcement Rules (External Data File)
+version = "1.0.0"
+
+[rules]
+max_sentence_length = 35
+disallow_emojis_in_headings = true
+require_citations_for_claims = true
+min_citation_coverage_ratio = 1.0
+unclear_marker = "unclear"
+
+[banned_openers]
+openers = [
+    "in today's fast-paced world",
+    "in today's digital landscape",
+    "this comprehensive guide",
+    "welcome to",
+    "as an ai",
+    "in this article",
+    "in this document",
+    "it is important to note that"
+]
+
+[banned_phrases]
+phrases = [
+    "in conclusion",
+    "to conclude",
+    "to summarize",
+    "in summary",
+    "all in all",
+    "final thoughts",
+    "best practices",
+    "industry standards",
+    "clean architecture",
+    "modern design patterns",
+    "handles logic",
+    "manages data",
+    "serves as the backbone",
+    "serves as the foundation",
+    "seamless integration",
+    "take it to the next level"
+]
+
+[vague_words]
+words = [
+    "robust",
+    "seamless",
+    "power",
+    "powerful",
+    "leverage",
+    "utilize",
+    "delve",
+    "cutting-edge",
+    "scalable",
+    "game-changer",
+    "effortless",
+    "pivotal",
+    "various",
+    "multiple",
+    "appropriate",
+    "efficient",
+    "suitable"
+]

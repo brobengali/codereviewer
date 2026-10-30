@@ -1,0 +1,19 @@
+Explain the high-level architecture, entrypoints, and core dependency flow of the repository.
+
+<<<DATA_BLOCK_{{ boundary_token }}>>>
+Repository Name: {{ repo_name }}
+Detected Architecture: {{ architecture_name }}
+Core Modules:
+{% for mod in core_modules %}
+- {{ mod }}
+{% endfor %}
+
+Key Manifests & Documentation:
+{% for doc in documents %}
+=== {{ doc.path }} ===
+{{ doc.content }}
+{% endfor %}
+<<</DATA_BLOCK_{{ boundary_token }}>>>
+
+Output your analysis matching the required structured schema. Every claim must provide a non-empty list of exact citations.
+
