@@ -8,7 +8,6 @@ from pydantic import BaseModel, ConfigDict, Field
 class ClaimCitation(BaseModel):
     """File and line number reference backing an architectural claim."""
 
-    model_config = ConfigDict(extra="forbid")
     path: str
     start_line: int
     end_line: int
@@ -17,7 +16,6 @@ class ClaimCitation(BaseModel):
 class CodeExplanationClaim(BaseModel):
     """Individual falsifiable claim supported by citations."""
 
-    model_config = ConfigDict(extra="forbid")
     statement: str
     citations: list[ClaimCitation] = Field(min_length=1)
 
@@ -25,7 +23,6 @@ class CodeExplanationClaim(BaseModel):
 class ExplanationResponse(BaseModel):
     """Structured response schema enforced across LLM generations."""
 
-    model_config = ConfigDict(extra="forbid")
     summary: str
     architecture_overview: str
     claims: list[CodeExplanationClaim] = Field(default_factory=list)
@@ -34,7 +31,6 @@ class ExplanationResponse(BaseModel):
 class AnswerCitation(BaseModel):
     """Exact file and line boundary reference supporting an answer or explanation."""
 
-    model_config = ConfigDict(extra="forbid")
     path: str
     start_line: int
     end_line: int
@@ -43,7 +39,6 @@ class AnswerCitation(BaseModel):
 class AskResponse(BaseModel):
     """Structured response schema for repository question answering."""
 
-    model_config = ConfigDict(extra="forbid")
     answer: str
     evidence_found: bool
     citations: list[AnswerCitation] = Field(default_factory=list)
@@ -53,7 +48,6 @@ class AskResponse(BaseModel):
 class ExplainResponse(BaseModel):
     """Structured response schema for code and symbol explanations adapted to audience."""
 
-    model_config = ConfigDict(extra="forbid")
     target: str
     audience_level: str
     summary: str
