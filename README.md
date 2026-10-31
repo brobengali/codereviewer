@@ -40,6 +40,9 @@ source .venv/bin/activate
 # On Windows (PowerShell):
 .\.venv\Scripts\Activate.ps1
 
+# On Windows (Command Prompt / CMD):
+.venv\Scripts\activate.bat
+
 # Install package dependencies
 pip install -e ".[dev]"
 ```
@@ -51,6 +54,11 @@ If you plan to run AI answers with Google Gemini, set your API key:
 ```powershell
 # Windows PowerShell
 $env:GEMINI_API_KEY = "your-api-key"
+```
+
+```cmd
+:: Windows Command Prompt (CMD)
+set GEMINI_API_KEY=your-api-key
 ```
 
 ```bash
@@ -76,9 +84,17 @@ This scans files, builds the dependency graph, identifies architecture patterns,
 - `ONBOARDING.md`: Traced feature flows, starter tasks, setup instructions, and architecture diagrams.
 - `index.html`: Interactive visual dashboard. Open it directly in your browser:
   ```powershell
-  Start-Process codeguide_output/index.html   # Windows
-  open codeguide_output/index.html            # macOS
-  xdg-open codeguide_output/index.html        # Linux
+  # Windows PowerShell
+  Start-Process codeguide_output/index.html
+
+  # Windows Command Prompt (CMD)
+  start codeguide_output\index.html
+
+  # macOS
+  open codeguide_output/index.html
+
+  # Linux
+  xdg-open codeguide_output/index.html
   ```
 
 Want to inspect what data would leave your machine without calling any external model?
@@ -184,6 +200,7 @@ CodeGuide loads settings following a strict hierarchy:
 | :--- | :--- | :--- | :--- |
 | `[llm]` | `provider` | `"gemini"` | LLM backend: `"gemini"` or `"local"` |
 | `[llm]` | `model_name` | `"gemini-3.5-flash"` | Target model name |
+| `[llm]` | `request_timeout_seconds` | `120.0` | HTTP request timeout in seconds |
 | `[llm]` | `temperature` | `0.1` | Generation sampling temperature |
 | `[llm]` | `offline` | `false` | Force strict offline execution |
 | `[llm]` | `cache_enabled` | `true` | Deterministic SHA-256 disk caching |
@@ -215,9 +232,30 @@ bandit -r src/ -q
 python scripts/check_no_hardcoding.py
 
 # Lint and check formatting
-ruff check src tests
-ruff format --check src tests
+ruff check src tests scripts
+ruff format --check src tests scripts
 ```
+
+---
+
+## Troubleshooting & Tips
+
+- **PowerShell Execution Policy Error**:
+  If PowerShell blocks activating the virtual environment with `Activate.ps1 is not digitally signed`, permit local scripts for the current terminal session:
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+  ```
+- **Inspect Prompts Without API Keys (`--dry-run`)**:
+  Test full AST parsing, dependency mapping, secret redaction, and prompt construction without invoking network LLM calls:
+  ```bash
+  codeguide ask "How is secret redaction implemented?" --dry-run
+  codeguide explain src/codeguide/redactor/engine.py --audience junior --dry-run
+  ```
+- **Custom Model Selection**:
+  Override the configured model dynamically from the command line:
+  ```bash
+  codeguide ask "How does routing work?" --model gemini-3.5-flash
+  ```
 
 ---
 
