@@ -2,7 +2,7 @@
 # All values are optional; any omitted field falls back to defaults.toml
 
 [llm]
-model_name = "gemini-1.5-pro"
+model_name = "gemini-2.5-flash"
 temperature = 0.1
 
 [analysis]

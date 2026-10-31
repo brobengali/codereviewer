@@ -19,7 +19,7 @@ def test_mask_sensitive_dict() -> None:
         "api_key": "super-secret-key-12345",
         "nested": {
             "auth_token": "bearer-token-abcde",
-            "model_name": "gemini-1.5-flash",
+            "model_name": "gemini-2.5-flash",
             "user_password": "my_password",
         },
         "public_setting": "visible",
@@ -30,7 +30,7 @@ def test_mask_sensitive_dict() -> None:
     assert masked["provider"] == "gemini"
     assert masked["api_key"] == "********"
     assert masked["nested"]["auth_token"] == "********"
-    assert masked["nested"]["model_name"] == "gemini-1.5-flash"
+    assert masked["nested"]["model_name"] == "gemini-2.5-flash"
     assert masked["nested"]["user_password"] == "********"
     assert masked["public_setting"] == "visible"
 

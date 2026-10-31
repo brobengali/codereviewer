@@ -4,7 +4,7 @@ config_filename = "codeguide.toml"
 
 [llm]
 provider = "gemini"
-model_name = "gemini-1.5-flash"
+model_name = "gemini-2.5-flash"
 api_base_url = "https://generativelanguage.googleapis.com"
 api_key = ""
 api_key_env_var = "GEMINI_API_KEY"
