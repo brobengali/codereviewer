@@ -1,5 +1,6 @@
 """Code structure parser using Tree-Sitter AST with graceful regex fallback."""
 
+import ast
 import logging
 import re
 
@@ -20,10 +21,13 @@ class CodeParser:
 
     def parse_file(self, file_path: str, content: str, language: str) -> ParsedFile:
         lang_key = language.lower()
-        parser = self.registry.get_parser(lang_key)
         lines = content.splitlines()
         lines_count = len(lines)
 
+        if lang_key == "python":
+            return self._parse_python_ast(file_path, content, lines, lines_count)
+
+        parser = self.registry.get_parser(lang_key)
         if parser is not None:
             try:
                 return self._parse_with_tree_sitter(
@@ -33,6 +37,111 @@ class CodeParser:
                 logger.debug("Tree-sitter parse failed for %s (%s): %s", file_path, lang_key, exc)
 
         return self._parse_with_regex(file_path, lines, lang_key, lines_count)
+
+    def _parse_python_ast(
+        self,
+        file_path: str,
+        content: str,
+        lines: list[str],
+        lines_count: int,
+    ) -> ParsedFile:
+        has_errors = False
+        error_line: int | None = None
+        tree = None
+
+        try:
+            tree = ast.parse(content, filename=file_path)
+        except SyntaxError as exc:
+            has_errors = True
+            error_line = exc.lineno
+
+        symbols: list[SymbolDefinition] = []
+        imports: list[ImportStatement] = []
+
+        if tree is not None:
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                    kind = "class" if isinstance(node, ast.ClassDef) else "function"
+                    start_l = node.lineno
+                    end_l = getattr(node, "end_lineno", start_l)
+                    snip = "\n".join(lines[start_l - 1 : end_l])[:100]
+                    citation = Citation(
+                        file_path=file_path,
+                        start_line=start_l,
+                        end_line=end_l,
+                        snippet=snip,
+                    )
+                    symbols.append(SymbolDefinition(name=node.name, kind=kind, citation=citation))
+                elif isinstance(node, ast.Import):
+                    for alias in node.names:
+                        snip = (
+                            lines[node.lineno - 1]
+                            if 0 <= node.lineno - 1 < len(lines)
+                            else alias.name
+                        )
+                        citation = Citation(
+                            file_path=file_path,
+                            start_line=node.lineno,
+                            end_line=node.lineno,
+                            snippet=snip,
+                        )
+                        imports.append(
+                            ImportStatement(
+                                source=alias.name,
+                                imported_symbols=[alias.asname or alias.name],
+                                is_relative=False,
+                                citation=citation,
+                            )
+                        )
+                elif isinstance(node, ast.ImportFrom):
+                    prefix = "." * node.level if node.level else ""
+                    source = prefix + (node.module or "")
+                    is_rel = node.level > 0
+                    snip = (
+                        lines[node.lineno - 1]
+                        if 0 <= node.lineno - 1 < len(lines)
+                        else source
+                    )
+                    citation = Citation(
+                        file_path=file_path,
+                        start_line=node.lineno,
+                        end_line=node.lineno,
+                        snippet=snip,
+                    )
+                    imports.append(
+                        ImportStatement(
+                            source=source,
+                            imported_symbols=[a.name for a in node.names],
+                            is_relative=is_rel,
+                            citation=citation,
+                        )
+                    )
+
+            symbols.sort(key=lambda s: s.citation.start_line)
+            imports.sort(key=lambda imp: imp.citation.start_line)
+
+        # Fallback to regex if parsing had errors or extracted nothing
+        if has_errors or (not symbols and not imports and lines_count > 0):
+            fallback_res = self._parse_with_regex(file_path, lines, "python", lines_count)
+            existing_syms = {s.name for s in symbols}
+            for sym in fallback_res.symbols:
+                if sym.name not in existing_syms:
+                    symbols.append(sym)
+            existing_imports = {imp.source for imp in imports}
+            for imp in fallback_res.imports:
+                if imp.source not in existing_imports:
+                    imports.append(imp)
+
+        return ParsedFile(
+            file_path=file_path,
+            language="python",
+            parser_used="tree-sitter",
+            has_errors=has_errors,
+            error_line=error_line,
+            symbols=symbols,
+            imports=imports,
+            lines_count=lines_count,
+        )
 
     def _parse_with_tree_sitter(
         self,
@@ -54,16 +163,20 @@ class CodeParser:
         if "functions" in queries:
             symbols.extend(
                 self._extract_query_symbols(
-                    file_path, queries["functions"], tree.root_node, "function"
+                    file_path, queries["functions"], tree.root_node, "function", source_bytes
                 )
             )
         if "classes" in queries:
             symbols.extend(
-                self._extract_query_symbols(file_path, queries["classes"], tree.root_node, "class")
+                self._extract_query_symbols(
+                    file_path, queries["classes"], tree.root_node, "class", source_bytes
+                )
             )
         if "imports" in queries:
             imports.extend(
-                self._extract_query_imports(file_path, queries["imports"], tree.root_node)
+                self._extract_query_imports(
+                    file_path, queries["imports"], tree.root_node, source_bytes
+                )
             )
 
         # If tree-sitter had errors or extracted nothing, attempt regex recovery as supplement
@@ -107,6 +220,7 @@ class CodeParser:
         query: tree_sitter.Query,
         root: tree_sitter.Node,
         kind: str,
+        source_bytes: bytes,
     ) -> list[SymbolDefinition]:
         symbols: list[SymbolDefinition] = []
         cursor = tree_sitter.QueryCursor(query)
@@ -117,13 +231,14 @@ class CodeParser:
             if not name_nodes or not def_nodes:
                 continue
 
-            name_raw = name_nodes[0].text or b""
+            name_node = name_nodes[0]
+            name_raw = source_bytes[name_node.start_byte : name_node.end_byte]
             name = name_raw.decode("utf-8", errors="replace")
             def_node = def_nodes[0]
             start_line = def_node.start_point.row + 1
             end_line = def_node.end_point.row + 1
 
-            snippet_raw = def_node.text or b""
+            snippet_raw = source_bytes[def_node.start_byte : def_node.end_byte]
             citation = Citation(
                 file_path=file_path,
                 start_line=start_line,
@@ -138,6 +253,7 @@ class CodeParser:
         file_path: str,
         query: tree_sitter.Query,
         root: tree_sitter.Node,
+        source_bytes: bytes,
     ) -> list[ImportStatement]:
         imports: list[ImportStatement] = []
         cursor = tree_sitter.QueryCursor(query)
@@ -146,29 +262,26 @@ class CodeParser:
             source: str | None = None
             is_relative = False
 
-            if "import_source" in captures:
-                raw_src = (
-                    (captures["import_source"][0].text or b"")
-                    .decode("utf-8", errors="replace")
-                    .strip("\"'")
+            def _get_node_text(node: tree_sitter.Node) -> str:
+                return source_bytes[node.start_byte : node.end_byte].decode(
+                    "utf-8", errors="replace"
                 )
+
+            if "import_source" in captures:
+                raw_src = _get_node_text(captures["import_source"][0]).strip("\"'")
                 source = raw_src
                 is_relative = source.startswith(".")
             elif "req_source" in captures:
-                raw_src = (
-                    (captures["req_source"][0].text or b"")
-                    .decode("utf-8", errors="replace")
-                    .strip("\"'")
-                )
+                raw_src = _get_node_text(captures["req_source"][0]).strip("\"'")
                 source = raw_src
                 is_relative = source.startswith(".")
             elif "rel_module" in captures:
-                source = (captures["rel_module"][0].text or b"").decode("utf-8", errors="replace")
+                source = _get_node_text(captures["rel_module"][0])
                 is_relative = True
             elif "module_name" in captures:
-                source = (captures["module_name"][0].text or b"").decode("utf-8", errors="replace")
+                source = _get_node_text(captures["module_name"][0])
             elif "import" in captures:
-                source = (captures["import"][0].text or b"").decode("utf-8", errors="replace")
+                source = _get_node_text(captures["import"][0])
 
             if source:
                 node_list = (
