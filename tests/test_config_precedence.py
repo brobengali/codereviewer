@@ -13,7 +13,7 @@ def test_defaults_loaded_when_no_overrides(tmp_path: Path) -> None:
     cfg = load_config(config_path=tmp_path / "nonexistent.toml", env={})
     assert cfg.meta.version == "1.0.0"
     assert cfg.llm.model_name == "gemini-3.8-flash"
-    assert cfg.llm.request_timeout_seconds == 30.0
+    assert cfg.llm.request_timeout_seconds == 120.0
     assert cfg.citations.unclear_fallback == "unclear"
 
 
