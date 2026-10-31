@@ -97,11 +97,7 @@ class CodeParser:
                     prefix = "." * node.level if node.level else ""
                     source = prefix + (node.module or "")
                     is_rel = node.level > 0
-                    snip = (
-                        lines[node.lineno - 1]
-                        if 0 <= node.lineno - 1 < len(lines)
-                        else source
-                    )
+                    snip = lines[node.lineno - 1] if 0 <= node.lineno - 1 < len(lines) else source
                     citation = Citation(
                         file_path=file_path,
                         start_line=node.lineno,
