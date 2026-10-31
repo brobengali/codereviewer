@@ -183,7 +183,7 @@ CodeGuide loads settings following a strict hierarchy:
 | Section | Key | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `[llm]` | `provider` | `"gemini"` | LLM backend: `"gemini"` or `"local"` |
-| `[llm]` | `model_name` | `"gemini-2.5-flash"` | Target model name |
+| `[llm]` | `model_name` | `"gemini-3.8-flash"` | Target model name |
 | `[llm]` | `temperature` | `0.1` | Generation sampling temperature |
 | `[llm]` | `offline` | `false` | Force strict offline execution |
 | `[llm]` | `cache_enabled` | `true` | Deterministic SHA-256 disk caching |
