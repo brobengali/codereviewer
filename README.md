@@ -24,7 +24,18 @@ Most AI coding tools invent files that do not exist, gloss over architectural de
 
 ### 1. Installation
 
-Requires Python 3.11+.
+#### One-Command Global Install (Recommended for Judges, Users & Evaluators)
+
+Run CodeGuide globally from any terminal without manually cloning repositories or configuring virtual environments:
+
+```bash
+pipx install git+https://github.com/brobengali/codereviewer.git
+```
+*(Or with standard pip: `pip install git+https://github.com/brobengali/codereviewer.git`)*
+
+#### Developer Setup (From Source)
+
+If you are cloning to develop, run the tests, or inspect the source:
 
 ```bash
 # Clone the repository
